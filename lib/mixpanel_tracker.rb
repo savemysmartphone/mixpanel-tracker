@@ -1,7 +1,8 @@
 module MixpanelTracker
+  #extend ActiveSupport::Concern
 
   def mixpanel
-    @mixpanel ||= Mixpanel.new_tracker
+    @mixpanel ||= MixpanelMixpanel::Tracker.new(ENV['SAVE_MIXPANEL_TOKEN'])
   end
 
   def mixpanel_tracker(event, opts={})
