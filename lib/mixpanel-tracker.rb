@@ -1,5 +1,7 @@
+require 'active_support/configurable'
+
 module MixpanelTracker
-  #extend ActiveSupport::Concern
+  include ActiveSupport::Configurable
 
   def mixpanel
     @mixpanel ||= MixpanelMixpanel::Tracker.new(ENV['SAVE_MIXPANEL_TOKEN'])
@@ -11,6 +13,12 @@ module MixpanelTracker
   end
 
   class << self
+    def included(base)
+      base.send(:extend, MixpanelTracker::Extension)
+    end
+  end
+
+  module Extension
     def mixpanel_tracker(*args, &block)
       after_action(*args) do
         opts = block_given? ? instance_eval(&block) : {}

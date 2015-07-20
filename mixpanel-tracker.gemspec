@@ -13,4 +13,5 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.0.0'
 
   s.add_runtime_dependency 'mixpanel-ruby'
+  s.add_runtime_dependency 'configurations'
 end
