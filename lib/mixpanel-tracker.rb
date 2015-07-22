@@ -7,9 +7,12 @@ module MixpanelTracker
     @mixpanel ||= MixpanelMixpanel::Tracker.new(ENV['SAVE_MIXPANEL_TOKEN'])
   end
 
-  def mixpanel_tracker(event, opts={})
-    # FIXME: ip?
-    mixpanel.track(current_saver.id, event, opts, request.ip)
+  def mixpanel_tracker(event, opts = {})
+    if Rails.env.production?
+      mixpanel.track(current_saver.id, event, opts, request.ip)
+    else
+      Rails.logger.info "#{event}___#{params[:controller]}=>#{params[:action]} ____ #{opts}"
+    end
   end
 
   class << self
@@ -27,9 +30,3 @@ module MixpanelTracker
     end
   end
 end
-
-# class MyController
-#   mixpanel_tracker only: :index do
-#     { my: :hash }
-#   end
-# end

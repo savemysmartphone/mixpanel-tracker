@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.summary      = 'Mixpanel based gem for automatic controller tracking'
   s.homepage     = 'https://github.com/savemysmartphone/mixpanel-tracker'
   s.description  = 'Yoddo yoddo'
-  s.authors      = ["Claouis", "Arnaud 'red' Rouyer"]
+  s.authors      = ['Claouis', "Arnaud 'red' Rouyer"]
 
   s.files        = `git ls-files`.split("\n")
   s.require_path = 'lib'
