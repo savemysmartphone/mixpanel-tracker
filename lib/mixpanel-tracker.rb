@@ -1,23 +1,27 @@
-require 'active_support/configurable'
-
 module MixpanelTracker
-  include ActiveSupport::Configurable
+  autoload :Configuration, 'mixpanel_tracker/configuration'
 
-  def mixpanel
-    @mixpanel ||= MixpanelMixpanel::Tracker.new(ENV['SAVE_MIXPANEL_TOKEN'])
+  def mixpanel(token)
+    @mixpanel ||= Mixpanel::Tracker.new(token)
   end
 
   def mixpanel_tracker(event, opts = {})
-    if Rails.env.production?
-      mixpanel.track(current_saver.id, event, opts, request.ip)
-    else
-      Rails.logger.info "#{event}___#{params[:controller]}=>#{params[:action]} ____ #{opts}"
+    config_env = MixpanelTracker::Configuration[Rails.env]
+    if config_env.token
+      mixpanel(config_env.token).track(current_saver.id, event, opts, request.ip)
+    end
+    if config_env.block
+      config_env.block.call(event, opts)
     end
   end
 
   class << self
     def included(base)
       base.send(:extend, MixpanelTracker::Extension)
+    end
+
+    def configure
+      yield MixpanelTracker::Configuration
     end
   end
 
