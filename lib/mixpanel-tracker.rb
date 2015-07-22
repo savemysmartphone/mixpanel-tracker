@@ -1,3 +1,5 @@
+require 'mixpanel-ruby'
+
 module MixpanelTracker
   autoload :Configuration, 'mixpanel_tracker/configuration'
 
