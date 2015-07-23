@@ -31,7 +31,11 @@ module MixpanelTracker
     def mixpanel_tracker(*args, &block)
       after_action(*args) do
         opts = block_given? ? instance_eval(&block) : {}
-        mixpanel_tracker(I18n.t("mixpanel.#{params[:controller]}.#{params[:action]}"), opts)
+        options = {}
+        options[:res_locale] = "#{I18n.locale}"
+        options[:resource_sg] = "#{controller_name.singularize}"
+        options[:resource_pl] = "#{controller_name}"
+        mixpanel_tracker(I18n.t("mixpanel.default.#{params[:action]}", options), opts)
       end
     end
   end
