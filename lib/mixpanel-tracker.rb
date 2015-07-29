@@ -10,10 +10,20 @@ module MixpanelTracker
   def mixpanel_tracker(event, opts = {})
     config_env = MixpanelTracker::Configuration[Rails.env]
     if config_env.token
-      mixpanel(config_env.token).track(current_saver.id, event, opts, request.ip)
+      mixpanel(config_env.token).track(current_user.id, event, opts, request.ip)
     end
     if config_env.block
-      config_env.block.call(event, opts)
+      config_env.block.call(current_user, event, opts)
+    end
+  end
+
+  def mixpanel_people_tracker(opts = {})
+    config_env = MixpanelTracker::Configuration[Rails.env]
+    if config_env.token
+      mixpanel(config_env.token).people.set(current_user.id, opts)
+    end
+    if config_env.block
+      config_env.block.call(current_user, 'people_tracker', opts)
     end
   end
 
@@ -32,10 +42,16 @@ module MixpanelTracker
       after_action(*args) do
         opts = block_given? ? instance_eval(&block) : {}
         options = {}
-        options[:res_locale] = "#{I18n.locale}"
         options[:resource_sg] = "#{controller_name.singularize}"
         options[:resource_pl] = "#{controller_name}"
         mixpanel_tracker(I18n.t("mixpanel.default.#{params[:action]}", options), opts)
+      end
+    end
+
+    def mixpanel_people_tracker(*args, &block)
+      after_action(*args) do
+        opts = block_given? ? instance_eval(&block) : {}
+        mixpanel_people_tracker(opts)
       end
     end
   end
