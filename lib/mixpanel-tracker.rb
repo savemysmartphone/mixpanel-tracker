@@ -41,10 +41,12 @@ module MixpanelTracker
     def mixpanel_tracker(*args, &block)
       after_action(*args) do
         opts = block_given? ? instance_eval(&block) : {}
-        options = {}
-        options[:resource_sg] = "#{controller_name.singularize}"
-        options[:resource_pl] = "#{controller_name}"
-        mixpanel_tracker(I18n.t("mixpanel.default.#{params[:action]}", options), opts)
+        unless params[:ignore_tracking] == 'true'
+          options = {}
+          options[:resource_sg] = "#{controller_name.singularize}"
+          options[:resource_pl] = "#{controller_name}"
+          mixpanel_tracker(I18n.t("mixpanel.default.#{params[:action]}", options), opts)
+        end
       end
     end
 
