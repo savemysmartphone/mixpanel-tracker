@@ -9,7 +9,7 @@ module MixpanelTracker
 
   def mixpanel_tracker(event, opts = {})
     config_env = MixpanelTracker::Configuration[Rails.env]
-    if config_env.token
+    if config_env.token && current_user.try(:id)
       mixpanel(config_env.token).track(current_user.id, event, opts, request.ip)
     end
     if config_env.block
@@ -19,7 +19,7 @@ module MixpanelTracker
 
   def mixpanel_people_tracker(opts = {})
     config_env = MixpanelTracker::Configuration[Rails.env]
-    if config_env.token
+    if config_env.token && current_user.try(:id)
       mixpanel(config_env.token).people.set(current_user.id, opts)
     end
     if config_env.block
